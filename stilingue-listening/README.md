@@ -20,6 +20,7 @@ A Stilingue é a plataforma de social listening e SAC 2.0 da Blip. Ela monitora 
 - **Skill `setup-conexao`** — guia o usuário na primeira conexão e na resolução de erros de autenticação.
 - **Skill `blip-design-system`** — identidade visual oficial da Blip (cores, tipografia Nunito Sans, componentes, ilustrações, UI kit do Blip Desk) para qualquer artefato visual que o Claude gerar a partir dos dados da Stilingue.
 - **Skill `one-page-report`** — monta relatórios executivos de uma página em HTML autocontido (pronto pra PDF/impressão/e-mail), a partir de dados do Radar, Warroom ou Smartcare. Pergunta se deve usar o tema Stilingue by Blip ou um tema personalizado com a cara da marca do cliente.
+- **Skill [`prompt-triagem`](./skills/prompt-triagem/SKILL.md)** — analisa os últimos seis meses de tags e temas aplicados no painel selecionado e propõe um prompt inicial para trial do agente de triagem. Usa exemplos reais para inferir critérios de classificação, explicita lacunas e entrega um texto editável para revisão e uso na ferramenta, sem alterar o painel nem ativar o agente.
 
 ## Como conectar
 
@@ -52,6 +53,17 @@ Tokens podem ser revogados a qualquer momento pela Stilingue, e o acesso respeit
 - "Compara o buzz da campanha X com o da concorrente Y em junho" → comparação lado a lado com mesma janela de tempo e mesma métrica.
 - "Meu painel está bem configurado?" (com a apikey) → auditoria do setup: grupos com baixa cobertura, automações pausadas, saúde dos limites de coleta.
 - "Como está o SLA do meu SAC este mês?" → status de conversas, TMR/TMT, gargalos.
+- "Cria um prompt inicial de triagem para este cliente com base nas tags e temas dos últimos seis meses" → seleção do painel, análise do histórico e prompt para trial, com critérios e ressalvas.
+
+### Prompt inicial de triagem
+
+Invoque `/prompt-triagem` ou peça um prompt para iniciar o trial do agente de triagem. A skill usa `list_panels` e `setup` para identificar o painel e a taxonomia, e `warroom_query` para analisar o uso das anotações nos últimos seis meses de calendário.
+
+É necessário acesso ao setup e à leitura das publicações do mesmo painel. Se as ferramentas não fornecerem texto associado às tags/temas aplicados, a skill solicita um export autorizado com esses dados; rankings ou nomes de rótulos isolados não bastam para inferir regras.
+
+O resultado é uma proposta inicial, não um gabarito nem uma configuração publicada: inclui o prompt para copiar no campo de instruções customizadas do triagem, a evidência que sustenta as regras e um roteiro de teste. O escopo padrão é só tags e temas, sem resposta pública/privada nem alteração de sentimento/status. Teste primeiro em **curadoria**, com revisão humana: instruções de prompt não são uma trava técnica de publicação.
+
+O cliente pode revisar e alterar o texto depois na ferramenta. O histórico pode incluir automações e classificações inconsistentes; a skill não promete reproduzir todas as anotações nem medir acurácia sem um teste real.
 
 ## Privacidade e dados
 
