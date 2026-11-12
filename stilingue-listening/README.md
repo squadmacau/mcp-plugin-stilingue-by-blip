@@ -59,6 +59,13 @@ Tokens podem ser revogados a qualquer momento pela Stilingue, e o acesso respeit
 
 Invoque `/prompt-triagem` ou peça um prompt para iniciar o trial do agente de triagem. A skill usa `list_panels` e `setup` para identificar o painel e a taxonomia, e `warroom_query` para analisar o uso das anotações nos últimos seis meses de calendário.
 
+No início, escolha como construir o prompt:
+
+- **Expresso:** a IA decide com base nas evidências e deixa dúvidas sem solução fora do escopo, sem rodadas de aprovação.
+- **Detalhado (recomendado):** revisa as regras em pequenos blocos antes da geração; você pode aprovar, corrigir, excluir ou responder **Não sei**.
+
+Não é necessário conhecer as regras da operação para testar. **Não sei** não conta como aprovação: a IA mantém somente o que o histórico sustenta, restringe ou exclui o restante e registra as pendências. É possível mudar para expresso sem perder as decisões já dadas. Ambos os modos mantêm a mesma análise e os mesmos limites; mudam a participação do usuário, não o rigor nem as permissões.
+
 É necessário acesso ao setup e à leitura das publicações do mesmo painel. Se as ferramentas não fornecerem texto associado às tags/temas aplicados, a skill solicita um export autorizado com esses dados; rankings ou nomes de rótulos isolados não bastam para inferir regras.
 
 O resultado é uma proposta inicial, não um gabarito nem uma configuração publicada: inclui o prompt para copiar no campo de instruções customizadas do triagem, a evidência que sustenta as regras e um roteiro de teste. O escopo padrão é só tags e temas, sem resposta pública/privada nem alteração de sentimento/status. Teste primeiro em **curadoria**, com revisão humana: instruções de prompt não são uma trava técnica de publicação.

@@ -80,7 +80,9 @@ Para eventual escopo adicional aprovado: sentimento usa strings `POSITIVO`, `NEG
 
 ## Molde para gerar o texto final
 
-Os marcadores abaixo são instruções de montagem, **não** conteúdo a entregar sem substituição. Remova seções sem regras sustentadas. Inclua somente a taxonomia selecionada para o trial, explicitando que outros rótulos ficam fora desta versão.
+Os marcadores abaixo são instruções de montagem, **não** conteúdo a entregar sem substituição. Remova seções sem regras sustentadas pelo histórico ou definidas explicitamente pelo usuário para o trial. Inclua somente a taxonomia selecionada, explicitando que outros rótulos ficam fora desta versão.
+
+Escolha de modo, perguntas de aprovação e respostas Não sei pertencem à conversa de construção e ao relatório, não ao prompt executado pelo triagem. O classificador não deve interrogar o consumidor para resolver dúvidas de taxonomia. O texto final contém apenas critérios decididos e sua regra de abstenção; não inclua critérios pendentes de confirmação como definitivos.
 
 ```text
 Você é um classificador de interações de social media de [MARCA/OPERAÇÃO].
@@ -142,7 +144,8 @@ EXEMPLOS
 [Exemplos sintéticos minimizados, identificados como ilustrativos,
 com entrada e objeto JSON completo. Use apenas nomes reais do catálogo:
 caso comum, ausência de correspondência, fronteira entre rótulos
-próximos e múltiplas classificações quando sustentadas.]
+próximos e múltiplas classificações quando sustentadas. Confira cada
+saída contra os critérios escritos: exemplos não criam exceções implícitas.]
 
 VERIFICAÇÃO ANTES DE RETORNAR
 JSON único e válido; nomes literais, autorizados e sem duplicatas;

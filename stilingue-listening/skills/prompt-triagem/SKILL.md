@@ -1,6 +1,6 @@
 ---
 name: prompt-triagem
-description: "Cria um prompt inicial para trial do agente de triagem da Stilingue a partir dos últimos seis meses de tags e temas aplicados no painel de um cliente. Use ao pedir prompt de triagem, configurar o início de um trial, aprender o padrão de tagueamento/classificação do cliente ou sugerir instruções para o agente aplicar as anotações existentes. Analisa histórico real, identifica critérios e exceções e gera texto editável compatível com o triagem. Não ativa o agente, não altera anotações e não substitui auditoria de setup."
+description: "Cria um prompt inicial para trial do agente de triagem da Stilingue a partir dos últimos seis meses de tags e temas aplicados no painel de um cliente. Use ao pedir prompt de triagem, iniciar um trial ou aprender o padrão de tagueamento/classificação. Oferece modo expresso, com decisões conservadoras da IA, e detalhado, com aprovação interativa de regras e opção Não sei. Analisa histórico real, identifica critérios e exceções e gera texto editável compatível com o triagem. Não ativa o agente, não altera anotações e não substitui auditoria de setup."
 user-invocable: true
 ---
 
@@ -30,6 +30,18 @@ As referências locais tornam a skill autocontida quanto às regras do triagem; 
 
 ## Fluxo
 
+### 0. Escolher como construir o prompt
+
+Se o usuário já escolheu nesta conversa, respeite a escolha. Caso contrário, antes da análise, pergunte uma única vez:
+
+- **Expresso:** “A IA analisa o histórico e decide quais regras têm sustentação para um primeiro prompt; dúvidas sem solução ficam fora.”
+- **Detalhado (recomendado):** “Você revisa as regras descobertas em pequenos blocos, pode corrigir e responder Não sei.”
+- **Não sei / escolha por mim:** siga o modo expresso e explique que nenhuma regra será considerada aprovada pelo usuário.
+
+Use a ferramenta de perguntas disponível. Se o ambiente não oferecer uma, apresente as opções no chat e aguarde. Não escolha silenciosamente nem gere o prompt na mesma mensagem em que pede a escolha. Recusa em escolher permite seguir o modo expresso, deixando essa decisão explícita; cancelamento interrompe o fluxo.
+
+Ambos os modos usam a mesma janela, fontes, critérios de evidência e contrato JSON. “Expresso” reduz as rodadas de aprovação, não a qualidade da análise, e não autoriza inventar regras. Identificação do painel, acesso e escopo continuam obrigatórios.
+
 ### 1. Selecionar o cliente e confirmar o escopo
 
 Reutilize a seleção explícita da conversa. Caso contrário, descubra os painéis com `list_panels`: um painel elegível pode ser usado diretamente; havendo vários, peça a escolha pelos nomes. Não peça `account_id`/`universe_id` ao usuário.
@@ -38,7 +50,7 @@ Consulte o setup completo antes de perguntar sobre informações que ele já for
 
 O padrão é **tags e temas existentes**, nos últimos seis meses de calendário até a consulta. Use um recorte diferente somente se o usuário o pedir, registrando a alteração. Se o trial for limitado a uma marca, canal, grupo ou operação dentro do painel, explicite esse filtro.
 
-Use a ferramenta de perguntas disponível apenas para decisões que os dados não resolvem: seleção ambígua, taxonomia com significados conflitantes ou escopo operacional incompatível com o texto disponível. Não transforme a skill em um briefing longo.
+Além da escolha de modo e da revisão detalhada, pergunte apenas sobre decisões que os dados não resolvem: seleção ambígua ou escopo operacional incompatível com o texto disponível. Não transforme a skill em um briefing longo.
 
 ### 2. Ler seis meses de aplicações reais
 
@@ -56,9 +68,39 @@ Se as ferramentas não estiverem disponíveis, solicite conexão ou export autor
 
 Preencha a matriz de evidências da referência. Para cada rótulo, descreva o que faz aplicar, o que faz não aplicar e as fronteiras com rótulos próximos.
 
-Inclua no prompt somente regras sustentadas pelo conteúdo e pelo contexto que o triagem efetivamente recebe. Separe hipóteses, classificações operacionais não inferíveis, mudanças de taxonomia e casos sem evidência suficiente.
+Selecione regras sustentadas pelo histórico ou por uma definição explícita do usuário, sempre aplicáveis ao contexto que o triagem efetivamente recebe. Registre separadamente essas origens: uma definição do usuário não vira evidência histórica. Separe hipóteses, classificações operacionais não inferíveis, mudanças de taxonomia e casos sem evidência suficiente.
 
 Não mantenha um rótulo só porque é frequente, nem descarte um raro só por ser raro. Prefira uma cobertura inicial menor e explicável a regras amplas que gerem falsos positivos. Liste explicitamente tudo que ficou fora do trial e por quê.
+
+#### Expresso: decidir sem rodadas de aprovação
+
+Aprofunde a amostra onde houver dúvida. Inclua apenas os critérios sustentados; restrinja o critério quando uma parte for clara e deixe a parte ambígua fora. Se não houver fronteira confiável, exclua a regra e registre a pendência. Não pergunte ao usuário cada caso de negócio neste modo nem marque decisões da IA como aprovadas pelo cliente.
+
+#### Detalhado: revisar antes de gerar
+
+Depois de ler o histórico e antes do bloco pronto para colar, apresente as regras em blocos de **até três**, priorizando siglas deduzidas, contradições, exclusividade, coocorrência e fronteiras incertas. Cubra as demais regras selecionadas nos blocos seguintes; agrupe apenas regras simples, sem esconder decisões distintas.
+
+Para cada regra, mostre:
+
+- nome literal da tag/tema e critério proposto de aplicar/não aplicar;
+- um exemplo minimizado e um contraste, com origem identificada (histórico ou sintético);
+- o que os dados sustentam, a dúvida específica e a consequência da escolha.
+
+Exemplo de pergunta: “A tag X deve ser aplicada quando a pessoa pergunta sobre cobertura de uma cidade, mesmo sem declarar que procura imóvel?”
+
+Ofereça **para cada regra**, sem aprovação global automática:
+
+| Resposta | Tratamento |
+| --- | --- |
+| **Sim, está correta** | Registre o critério exato como confirmado pelo usuário. Não amplie seu alcance. |
+| **Não / quero corrigir** | Permita explicar a correção ou excluir a regra. Se faltar a definição, peça um esclarecimento curto; não invente a alternativa. |
+| **Não sei** | Não é aprovação nem rejeição. Aplique a mesma decisão conservadora do expresso: mantenha só o que tem evidência suficiente, restrinja ou exclua a parte incerta e registre a pendência. Não repita a pergunta. |
+
+Use campos separados para regras diferentes e permita correção em texto livre. Aguarde as respostas antes de continuar ou gerar o prompt. Não exija que o usuário conheça a operação; desenvolvedores e pessoas em teste podem responder Não sei em todos os itens.
+
+Se a correção conflitar com o histórico, explique a divergência e registre-a como **definição do usuário para este trial**, sem alegar que foi aprendida dos dados. Nome inexistente no catálogo ou critério que dependa de informação indisponível não entra, mesmo aprovado: explique o impedimento e ofereça exclusão ou recorte aplicável.
+
+O usuário pode mudar para expresso a qualquer momento. Preserve aprovações, correções e exclusões já dadas; decida conservadoramente apenas o restante. Não retome questões respondidas sem nova evidência relevante.
 
 ### 4. Gerar e revisar o prompt
 
@@ -68,12 +110,14 @@ Inclua contexto da marca, critérios por tag/tema, exceções e exemplos curtos 
 
 Faça a revisão de mesa com a amostra reservada. Corrija contradições, nomes inválidos e regras que exijam informação indisponível. Diferencie essa revisão de um teste real no produto.
 
+Confira também regra versus exemplo: o exemplo não pode negar um rótulo que o próprio critério manda aplicar. Se uma exclusividade ou combinação continuar sem confirmação, não a imponha no prompt. Não entregue uma regra incerta como definitiva e relegue “confirmar com o cliente” apenas ao rodapé.
+
 ### 5. Entregar para o trial
 
 Entregue em português, nesta ordem:
 
-1. **Resumo da base:** painel pelo nome, fonte Warroom, datas/fuso, filtros, cobertura real, totais disponíveis e quantidade de publicações únicas efetivamente inspecionadas. Diferencie universo consultado de amostra lida.
-2. **Padrão identificado:** tabela curta com família, rótulo exato, critério, exceção e sustentação/ressalva. Acrescente a lista de rótulos fora do escopo e pendências.
+1. **Resumo da base:** modo escolhido, painel pelo nome, fonte Warroom, datas/fuso, filtros, cobertura real, totais disponíveis e quantidade de publicações únicas e grupos de textos independentes efetivamente inspecionados. Diferencie universo consultado de amostra lida; se não conseguir medir independência, declare a limitação e não presuma que cada ID seja um exemplo independente.
+2. **Padrão identificado:** tabela curta com família, rótulo exato, critério, exceção e sustentação/ressalva. Registre por regra a origem (histórico ou definição do usuário), a decisão da IA e a resposta do usuário, quando houver (confirmada, corrigida, excluída ou Não sei). No expresso, informe “sem aprovação humana”; não confunda Não sei com confirmação. Acrescente os rótulos fora do escopo e pendências.
 3. **Prompt inicial — copiar para a ferramenta:** um único bloco de texto, autocontido, sem marcadores pendentes, credenciais, métricas de auditoria ou dependências dos arquivos desta skill.
 4. **Como testar e ajustar:** selecionar e conferir o modo curadoria na ferramenta antes de aplicar em lote pequeno e controlado, com revisão humana; incluir casos comuns, sem correspondência, rótulos vizinhos e múltiplas classificações. Conferir também o JSON e os campos de não resposta/não alteração. Revisar falsos positivos/omissões e ajustar os critérios antes de ampliar. Não execute esse processamento por conta própria.
 5. **Trilha de evidências:** fontes, janelas/filtros, amostragem, exemplos minimizados com identificador/data e link somente quando retornado pela fonte, limitações e itens que precisam de confirmação.
@@ -86,6 +130,8 @@ Marque o resultado como **“proposta inicial para trial, editável pelo cliente
 - [ ] Taxonomia paginada; janela e cobertura efetiva declaradas.
 - [ ] Texto associado aos rótulos e amostra além dos posts mais populares.
 - [ ] Regras e exceções sustentadas; hipóteses e rótulos excluídos visíveis.
+- [ ] Modo respeitado; revisões aguardadas no detalhado; Não sei não contado como aprovação.
+- [ ] Regras e exemplos sem contradições; nenhuma exclusividade incerta imposta.
 - [ ] JSON completo com nomes literais de tags/temas, sem resposta pública/privada nem alteração de sentimento/status.
 - [ ] Prompt pronto para copiar, sem placeholders nem dados pessoais.
 - [ ] Revisão de mesa não apresentada como acurácia ou teste real.
