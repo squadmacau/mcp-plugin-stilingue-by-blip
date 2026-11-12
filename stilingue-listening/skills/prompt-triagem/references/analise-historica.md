@@ -76,11 +76,14 @@ Monte uma matriz de evidências antes de redigir:
 | Coocorrência | Outros rótulos realmente verificados nos mesmos posts |
 | Estabilidade | Meses/canais em que a regra se sustenta; mudanças e exceções |
 | Origem | Manual, automação ou desconhecida, somente se a fonte informar |
+| Revisão do usuário | Não solicitada (expresso), confirmada, corrigida, excluída ou Não sei; critério exato e justificativa quando fornecida |
 | Decisão | Incluir no trial, hipótese para revisão ou fora do escopo |
 
 Distinga três coisas: **configurado no painel**, **observado nas publicações** e **inferido como regra**.
 
-Uma regra apta ao trial precisa de exemplos independentes, contraste com casos próximos e coerência ao longo da cobertura disponível. Um único caso ou só o título do rótulo não basta. Aumente a amostra se a fronteira não estiver clara; se continuar ambígua, deixe a regra fora do prompt e explique a pendência.
+Uma regra inferida do histórico apta ao trial precisa de exemplos independentes, contraste com casos próximos e coerência ao longo da cobertura disponível. Um único caso ou só o título do rótulo não basta. Aumente a amostra se a fronteira não estiver clara; se continuar ambígua, siga a revisão do modo escolhido na skill. Sem definição explícita do usuário, restrinja ao trecho sustentado ou deixe a regra fora do prompt e explique a pendência. Não sei não resolve a ambiguidade.
+
+Uma definição explícita do usuário pode estabelecer a regra de negócio para o trial, mesmo divergindo do histórico; registre essa origem e a divergência sem reescrever a evidência. Ela não dispensa nome cadastrado, contexto disponível nem revisão de exemplos. Aprovar uma regra não aprova automaticamente suas combinações ou exclusividades.
 
 Não transforme coocorrência em dependência automática. Só imponha exclusividade, precedência ou aplicação conjunta se houver definição confirmada ou evidências claras, sem contradições relevantes.
 
@@ -97,6 +100,10 @@ Casos especiais:
 Separe uma parte dos exemplos **antes** de extrair as regras, priorizando dados recentes e diversidade de rótulos. Mantenha duplicatas e quase duplicatas no mesmo conjunto.
 
 Revise o prompt contra essa amostra reservada: rótulos indevidos, omissões, conflitos, necessidade de contexto e nomes fora da taxonomia. Ajuste regras com falhas e use exemplos ainda não utilizados para nova checagem, se houver.
+
+Confira todos os rótulos incluídos, não só as tags mais frequentes. Informe quais temas/tags tiveram exemplos lidos e quais só apareceram em agregados ou em definições do usuário. Não anuncie dez temas “com evidência suficiente” se apenas três tiveram evidência qualitativa e os demais não têm definição confirmada. Se faltar amostra para a revisão de algum rótulo, identifique-o como não verificado ou retire-o do escopo.
+
+Cheque exemplos sintéticos contra os critérios literais do prompt. Uma pergunta sobre atuação em uma cidade, por exemplo, não pode receber uma tag em um critério e perdê-la no exemplo idêntico. Sinais genéricos como “me chama no direct” ou “meu imóvel” não comprovam, sozinhos, profissão ou propriedade; mensagens como “enviei agora” podem depender do contexto e não são automaticamente irrelevantes.
 
 Essa revisão é uma simulação de mesa, não uma execução do agente em produção. Não anuncie acurácia, precisão, recall ou “validado no triagem” sem execução real, gabarito revisado e denominadores explícitos. Informe tamanho da amostra, como foi separada e limitações.
 
