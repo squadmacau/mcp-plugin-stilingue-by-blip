@@ -100,6 +100,10 @@ Use campos separados para regras diferentes e permita correção em texto livre.
 
 Se a correção conflitar com o histórico, explique a divergência e registre-a como **definição do usuário para este trial**, sem alegar que foi aprendida dos dados. Nome inexistente no catálogo ou critério que dependa de informação indisponível não entra, mesmo aprovado: explique o impedimento e ofereça exclusão ou recorte aplicável.
 
+Registre cada decisão com seu alcance literal: condição, exceções e rótulos envolvidos. Confirmar o significado de uma sigla não confirma critérios de aplicação, exclusividade ou combinação com outro rótulo. Não acrescente condições que o usuário não aprovou.
+
+Se uma resposta como “sempre somar” admitir alcances distintos, use a pergunta anterior para interpretá-la. Se ela não resolver, esclareça com um contraste concreto antes de gerar: “em toda reclamação ou apenas nas que recebem um tema específico desta versão?”. Não escolha uma restrição por conta própria e peça confirmação só depois de entregar. Se a resposta for Não sei ou houver mudança para expresso, deixe a combinação não resolvida fora e preserve apenas os critérios independentes sustentados.
+
 O usuário pode mudar para expresso a qualquer momento. Preserve aprovações, correções e exclusões já dadas; decida conservadoramente apenas o restante. Não retome questões respondidas sem nova evidência relevante.
 
 ### 4. Gerar e revisar o prompt
@@ -112,6 +116,16 @@ Faça a revisão de mesa com a amostra reservada. Corrija contradições, nomes 
 
 Confira também regra versus exemplo: o exemplo não pode negar um rótulo que o próprio critério manda aplicar. Se uma exclusividade ou combinação continuar sem confirmação, não a imponha no prompt. Não entregue uma regra incerta como definitiva e relegue “confirmar com o cliente” apenas ao rodapé.
 
+#### Gate de consistência da versão final
+
+Execute o [protocolo de revisão](./references/analise-historica.md#6-verificação-antes-da-entrega) sobre o **texto final desta versão**, inclusive em ajustes de um prompt já entregue:
+
+1. Reconcilie decisões e critérios: cada aprovação deve ter vindo de uma resposta efetiva da conversa e corresponder ao alcance registrado. Não atribua aprovação ao silêncio, ao Não sei ou a uma proposta da própria IA.
+2. Propague cada alteração para critérios, exclusões, combinações, exemplos JSON e resumo. Não modifique apenas o exemplo mais visível.
+3. Confira todos os exemplos contra todos os rótulos aplicáveis, incluindo ausências indevidas e relações entre rótulos; registre fora do prompt uma tabela curta de caso, esperado, resultado da revisão e ajuste.
+4. Refaça a revisão de mesa das regras alteradas e das que dependem delas. Dados e fontes podem ser reutilizados quando ainda aplicáveis; o resultado de uma revisão anterior não valida automaticamente um prompt novo. Diferencie casos já usados de novos casos reservados.
+5. Se restar contradição, corrija e repita a checagem. No detalhado, peça esclarecimento somente se faltar decisão de negócio; no expresso ou após Não sei, retire o trecho ambíguo. Não entregue um bloco pronto para colar com conflito conhecido.
+
 ### 5. Entregar para o trial
 
 Entregue em português, nesta ordem:
@@ -120,7 +134,7 @@ Entregue em português, nesta ordem:
 2. **Padrão identificado:** tabela curta com família, rótulo exato, critério, exceção e sustentação/ressalva. Registre por regra a origem (histórico ou definição do usuário), a decisão da IA e a resposta do usuário, quando houver (confirmada, corrigida, excluída ou Não sei). No expresso, informe “sem aprovação humana”; não confunda Não sei com confirmação. Acrescente os rótulos fora do escopo e pendências.
 3. **Prompt inicial — copiar para a ferramenta:** um único bloco de texto, autocontido, sem marcadores pendentes, credenciais, métricas de auditoria ou dependências dos arquivos desta skill.
 4. **Como testar e ajustar:** selecionar e conferir o modo curadoria na ferramenta antes de aplicar em lote pequeno e controlado, com revisão humana; incluir casos comuns, sem correspondência, rótulos vizinhos e múltiplas classificações. Conferir também o JSON e os campos de não resposta/não alteração. Revisar falsos positivos/omissões e ajustar os critérios antes de ampliar. Não execute esse processamento por conta própria.
-5. **Trilha de evidências:** fontes, janelas/filtros, amostragem, exemplos minimizados com identificador/data e link somente quando retornado pela fonte, limitações e itens que precisam de confirmação.
+5. **Trilha de evidências:** fontes, janelas/filtros, amostragem, exemplos minimizados com identificador/data e link somente quando retornado pela fonte, limitações e itens que precisam de confirmação. Inclua a tabela de consistência desta versão; ao revisar uma entrega anterior, diga quais regras mudaram, quais verificações foram refeitas e se houve novas consultas. Não apresente revisão não realizada como concluída.
 
 Marque o resultado como **“proposta inicial para trial, editável pelo cliente”**. Se a evidência permitir apenas parte da taxonomia, indique **“cobertura parcial”** e enumere o escopo; se não permitir regra alguma, entregue só o diagnóstico, sem bloco pronto para colar.
 
@@ -132,6 +146,8 @@ Marque o resultado como **“proposta inicial para trial, editável pelo cliente
 - [ ] Regras e exceções sustentadas; hipóteses e rótulos excluídos visíveis.
 - [ ] Modo respeitado; revisões aguardadas no detalhado; Não sei não contado como aprovação.
 - [ ] Regras e exemplos sem contradições; nenhuma exclusividade incerta imposta.
+- [ ] Alcance das aprovações preservado e alterações propagadas a todas as seções.
+- [ ] Revisão da versão atual registrada, sem herdar validação de uma versão anterior.
 - [ ] JSON completo com nomes literais de tags/temas, sem resposta pública/privada nem alteração de sentimento/status.
 - [ ] Prompt pronto para copiar, sem placeholders nem dados pessoais.
 - [ ] Revisão de mesa não apresentada como acurácia ou teste real.

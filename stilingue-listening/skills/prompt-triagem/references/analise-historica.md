@@ -105,6 +105,33 @@ Confira todos os rótulos incluídos, não só as tags mais frequentes. Informe 
 
 Cheque exemplos sintéticos contra os critérios literais do prompt. Uma pergunta sobre atuação em uma cidade, por exemplo, não pode receber uma tag em um critério e perdê-la no exemplo idêntico. Sinais genéricos como “me chama no direct” ou “meu imóvel” não comprovam, sozinhos, profissão ou propriedade; mensagens como “enviei agora” podem depender do contexto e não são automaticamente irrelevantes.
 
+### Protocolo de consistência e regressão
+
+Antes de entregar cada versão, confronte decisões registradas, critérios finais e saídas esperadas. A revisão deve buscar tanto rótulos adicionados indevidamente quanto rótulos omitidos.
+
+| Cenário a revisar | O que precisa ser consistente |
+| --- | --- |
+| Correspondência clara | Todos os rótulos exigidos pelos critérios aparecem na saída |
+| Ausência de correspondência | Listas vazias, sem categoria inventada |
+| Informação insuficiente sobre o autor | “Moro no imóvel”, “saí do apartamento”, “meu imóvel” ou “me chama no direct”, isoladamente, não provam vínculo de locação, propriedade ou profissão |
+| Contexto de conversa incompleto | “Enviei agora” ou “ok” não são irrelevantes por definição; use só a condição sustentada pelo contexto recebido |
+| Fronteira entre rótulos | Mesma condição tem o mesmo tratamento no critério, na exclusão e no exemplo |
+| Exclusividade | Uma sigla confirmada ou nomes parecidos não autorizam excluir outro rótulo; teste os critérios separadamente |
+| Aplicação conjunta aprovada | Confira um caso dentro do alcance aprovado e outro fora dele; não crie nem omita exceções |
+| Problema fora do catálogo parcial | A ausência de tema específico não altera uma regra geral aprovada nem autoriza forçar outro tema |
+
+Use casos pertinentes à taxonomia selecionada. Se um cenário não se aplicar, indique isso em vez de inventar um rótulo para testá-lo. Esses cenários são controles genéricos, não regras de um cliente.
+
+Para cada exemplo incluído no prompt, enumere os rótulos esperados a partir dos critérios e compare com **ambos** os arrays do JSON. Para cada regra alterada ou combinação aprovada, inclua ao menos um caso de aplicação e um de fronteira/abstenção na revisão. Registre no relatório:
+
+| Caso | Critério/decisão e origem | Tags e temas esperados | Resultado da revisão e ajuste |
+| --- | --- | --- | --- |
+| Identificador ou entrada sintética minimizada | Histórico, definição do usuário ou inferência sustentada | Nomes literais ou listas vazias | Consistente, corrigido ou pendente |
+
+Não fabrique essa tabela como se houvesse execução da LLM do triagem: ela documenta a comparação manual entre o texto e seus exemplos. Se houver linha pendente, resolva ou exclua o trecho conflitante antes de entregar o prompt pronto.
+
+**Mudou o prompt, muda o escopo da revisão.** Reutilizar o histórico não dispensa reavaliar os critérios alterados, seus exemplos e as regras relacionadas. Se reutilizar casos já examinados, descreva como teste de regressão de mesa, não como nova amostra independente. Para avaliar generalização, use casos reservados ainda não utilizados quando disponíveis; sem eles, declare que essa avaliação adicional não foi feita.
+
 Essa revisão é uma simulação de mesa, não uma execução do agente em produção. Não anuncie acurácia, precisão, recall ou “validado no triagem” sem execução real, gabarito revisado e denominadores explícitos. Informe tamanho da amostra, como foi separada e limitações.
 
 Erros de autenticação, permissão, timeout persistente e respostas parciais devem ser explicitados. Reutilize a recuperação documentada no conector; reduza/fatie consultas quando apropriado, sem trocar de cliente ou fonte. Com dados parciais suficientes, entregue somente o escopo sustentado e rotule a entrega como parcial; sem evidência qualitativa suficiente, não entregue um prompt pronto para uso.
