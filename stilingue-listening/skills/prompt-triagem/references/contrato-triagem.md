@@ -126,7 +126,9 @@ A ausência de texto/contexto não autoriza completar informação.
 CATÁLOGO E CRITÉRIOS AUTORIZADOS
 Tags:
 [Para cada tag: nome literal, aplicar quando, não aplicar quando,
-fronteira com rótulos próximos e exemplos curtos necessários.]
+fronteira com rótulos próximos e exemplos curtos necessários.
+Exemplos de palavras isoladas não substituem a condição semântica
+completa nem comprovam o papel do autor.]
 Temas:
 [Para cada tema: nome literal, aplicar quando, não aplicar quando,
 fronteira com rótulos próximos e exemplos curtos necessários.]
@@ -137,7 +139,10 @@ porque costuma aparecer junto de outro.
 Retorne múltiplos rótulos somente quando cada um tiver evidência.
 Retorne cada nome no máximo uma vez e preserve sua grafia exata.
 [Acrescente apenas dependências, exclusividades, precedências e
-restrições temporais efetivamente confirmadas.]
+restrições temporais efetivamente confirmadas. Quando houver aplicação
+conjunta aprovada, ajuste a regra geral acima para explicitar essa
+exceção e escreva a condição completa, sem restrições adicionais
+deduzidas do tamanho do catálogo desta versão.]
 Use apenas o catálogo desta versão; demais rótulos estão fora do trial.
 
 EXEMPLOS

@@ -66,6 +66,8 @@ No início, escolha como construir o prompt:
 
 Não é necessário conhecer as regras da operação para testar. **Não sei** não conta como aprovação: a IA mantém somente o que o histórico sustenta, restringe ou exclui o restante e registra as pendências. É possível mudar para expresso sem perder as decisões já dadas. Ambos os modos mantêm a mesma análise e os mesmos limites; mudam a participação do usuário, não o rigor nem as permissões.
 
+Antes de cada entrega, inclusive após correções do usuário, a skill revisa a consistência entre decisões, critérios e exemplos e registra os casos verificados. Reutilizar os mesmos dados não valida automaticamente uma nova versão do prompt. Aprovações ambíguas são esclarecidas no modo detalhado; trechos sem decisão ou sustentação ficam fora do texto pronto para uso.
+
 É necessário acesso ao setup e à leitura das publicações do mesmo painel. Se as ferramentas não fornecerem texto associado às tags/temas aplicados, a skill solicita um export autorizado com esses dados; rankings ou nomes de rótulos isolados não bastam para inferir regras.
 
 O resultado é uma proposta inicial, não um gabarito nem uma configuração publicada: inclui o prompt para copiar no campo de instruções customizadas do triagem, a evidência que sustenta as regras e um roteiro de teste. O escopo padrão é só tags e temas, sem resposta pública/privada nem alteração de sentimento/status. Teste primeiro em **curadoria**, com revisão humana: instruções de prompt não são uma trava técnica de publicação.
