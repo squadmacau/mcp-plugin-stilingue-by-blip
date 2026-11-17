@@ -12,9 +12,20 @@ Transforme o padrão de classificação observado no painel em uma **proposta co
 
 1. [Contrato do triagem e molde de prompt](./references/contrato-triagem.md): o que o texto do cliente pode instruir, o que o sistema já faz e como representar tags/temas.
 2. [Análise histórica](./references/analise-historica.md): consultas, amostragem, inferência e revisão.
-3. Convenções compartilhadas em [Fundação MCP](../fundacao-mcp/SKILL.md), [Setup](../fundacao-mcp/references/setup.md) e [Warroom](../fundacao-mcp/references/warroom.md).
+3. Consulte uma vez as convenções da [Fundação MCP](../fundacao-mcp/SKILL.md). Leia [Setup](../fundacao-mcp/references/setup.md) e [Warroom](../fundacao-mcp/references/warroom.md) somente nas seções necessárias aos parâmetros usados. Não releia referências já disponíveis no contexto nem carregue skills de relatórios, design ou auditoria que não façam parte do pedido.
 
 As referências locais tornam a skill autocontida quanto às regras do triagem; não exija acesso ao repositório `se-triagem` para usá-la. Se o produto apresentar um contrato diferente, confirme a compatibilidade antes de entregar texto pronto para colar.
+
+## Eficiência sem reduzir cobertura
+
+- Preserve os seis meses, o inventário completo e os critérios de evidência. Não limite rótulos ou encurte a janela silenciosamente para economizar.
+- Mantenha um registro compacto na sessão: painel, janela fixa, consultas e parâmetros, páginas concluídas, dados úteis, evidências por rótulo, casos reservados e decisões. Reutilize apenas dados realmente acessíveis, do mesmo escopo. Não copie respostas brutas para cada mensagem nem prometa cache persistente entre conversas.
+- Antes de chamar uma ferramenta, confira se a informação já está disponível. Nova aprovação, correção ou mudança entre expresso/detalhado não exige refazer consultas. Reconsulte somente dados faltantes, inválidos, desatualizados ou de escopo alterado, explicitando o motivo.
+- Use retornos mínimos e amostragem incremental conforme a referência histórica. Uma publicação com vários rótulos verificados serve de evidência para todos eles; não busque outra só para preencher uma grade rótulo × mês × canal.
+- Agregue e deduplique localmente quando o ambiente permitir, sem enviar dados a serviços externos. Processar depois do retorno reduz trabalho repetido, mas só filtros/projeção no servidor reduzem o payload original. Não invente parâmetros nem trunque evidência necessária.
+- Evite subagentes para repetir leitura ou revisão da mesma base. Paralelizar chamadas não reduz, por si só, tokens ou créditos.
+- Durante a análise, comunique apenas decisões e impedimentos. Entregue o prompt completo uma vez ao final; nas revisões posteriores, mostre alterações e verificações afetadas, salvo pedido de nova versão integral.
+- Registre chamadas realizadas (incluindo repetições), publicações retornadas e únicas, e se houve novas consultas. Informe tokens/custo somente se o ambiente fornecer essas métricas; não estime créditos a partir do número de chamadas.
 
 ## Limites obrigatórios
 
@@ -78,7 +89,7 @@ Aprofunde a amostra onde houver dúvida. Inclua apenas os critérios sustentados
 
 #### Detalhado: revisar antes de gerar
 
-Depois de ler o histórico e antes do bloco pronto para colar, apresente as regras em blocos de **até três**, priorizando siglas deduzidas, contradições, exclusividade, coocorrência e fronteiras incertas. Cubra as demais regras selecionadas nos blocos seguintes; agrupe apenas regras simples, sem esconder decisões distintas.
+Depois de ler o histórico e antes do bloco pronto para colar, apresente as regras em blocos de **até três**, priorizando siglas deduzidas, contradições, exclusividade, coocorrência e fronteiras incertas. Cubra as demais regras selecionadas nos blocos seguintes; agrupe apenas regras simples, sem esconder decisões distintas. Cada rodada traz só as regras em revisão e a pergunta: não repita panorama, evidências já mostradas, referências ou prompt completo. Não consulte novamente o MCP a cada resposta do usuário.
 
 Para cada regra, mostre:
 
@@ -122,19 +133,21 @@ Execute o [protocolo de revisão](./references/analise-historica.md#6-verificaç
 
 1. Reconcilie decisões e critérios: cada aprovação deve ter vindo de uma resposta efetiva da conversa e corresponder ao alcance registrado. Não atribua aprovação ao silêncio, ao Não sei ou a uma proposta da própria IA.
 2. Propague cada alteração para critérios, exclusões, combinações, exemplos JSON e resumo. Não modifique apenas o exemplo mais visível.
-3. Confira todos os exemplos contra todos os rótulos aplicáveis, incluindo ausências indevidas e relações entre rótulos; registre fora do prompt uma tabela curta de caso, esperado, resultado da revisão e ajuste.
+3. Confira todos os exemplos contra todos os rótulos aplicáveis, incluindo ausências indevidas e relações entre rótulos; registre na sessão uma tabela curta de caso, esperado, resultado da revisão e ajuste.
 4. Refaça a revisão de mesa das regras alteradas e das que dependem delas. Dados e fontes podem ser reutilizados quando ainda aplicáveis; o resultado de uma revisão anterior não valida automaticamente um prompt novo. Diferencie casos já usados de novos casos reservados.
 5. Se restar contradição, corrija e repita a checagem. No detalhado, peça esclarecimento somente se faltar decisão de negócio; no expresso ou após Não sei, retire o trecho ambíguo. Não entregue um bloco pronto para colar com conflito conhecido.
 
 ### 5. Entregar para o trial
 
-Entregue em português, nesta ordem:
+Na primeira entrega ou quando solicitada a versão integral, entregue em português, nesta ordem. Em ajustes posteriores, use apenas alterações, verificações afetadas e novas ressalvas; não repita as cinco seções sem necessidade.
 
-1. **Resumo da base:** modo escolhido, painel pelo nome, fonte Warroom, datas/fuso, filtros, cobertura real, totais disponíveis e quantidade de publicações únicas e grupos de textos independentes efetivamente inspecionados. Diferencie universo consultado de amostra lida; se não conseguir medir independência, declare a limitação e não presuma que cada ID seja um exemplo independente.
-2. **Padrão identificado:** tabela curta com família, rótulo exato, critério, exceção e sustentação/ressalva. Registre por regra a origem (histórico ou definição do usuário), a decisão da IA e a resposta do usuário, quando houver (confirmada, corrigida, excluída ou Não sei). No expresso, informe “sem aprovação humana”; não confunda Não sei com confirmação. Acrescente os rótulos fora do escopo e pendências.
+1. **Resumo da base:** modo, painel pelo nome, Warroom, datas/fuso, filtros, cobertura real, totais disponíveis, publicações únicas e grupos de textos independentes inspecionados. Diferencie universo de amostra; se não medir independência, declare isso. Inclua o resumo operacional de consultas, sem estimar créditos.
+2. **Padrão identificado:** resumo curto das regras e ressalvas, sem duplicar o catálogo de critérios que estará no prompt. Mantenha no registro da sessão a origem e a decisão por regra; destaque no relatório definições do usuário, divergências, correções e Não sei. No expresso, informe “sem aprovação humana”. Agrupe rótulos fora do escopo por motivo, preservando seus nomes; não os descreva como analisados qualitativamente quando não foram.
 3. **Prompt inicial — copiar para a ferramenta:** um único bloco de texto, autocontido, sem marcadores pendentes, credenciais, métricas de auditoria ou dependências dos arquivos desta skill.
 4. **Como testar e ajustar:** selecionar e conferir o modo curadoria na ferramenta antes de aplicar em lote pequeno e controlado, com revisão humana; incluir casos comuns, sem correspondência, rótulos vizinhos e múltiplas classificações. Conferir também o JSON e os campos de não resposta/não alteração. Revisar falsos positivos/omissões e ajustar os critérios antes de ampliar. Não execute esse processamento por conta própria.
-5. **Trilha de evidências:** fontes, janelas/filtros, amostragem, exemplos minimizados com identificador/data e link somente quando retornado pela fonte, limitações e itens que precisam de confirmação. Inclua a tabela de consistência desta versão; ao revisar uma entrega anterior, diga quais regras mudaram, quais verificações foram refeitas e se houve novas consultas. Não apresente revisão não realizada como concluída.
+5. **Trilha de evidências:** síntese de fontes, amostragem, exemplos minimizados com identificador/data e link somente quando retornado, limitações e pendências, sem repetir o resumo da base. Mostre o balanço da revisão de consistência e os casos corrigidos ou limitados; deixe a matriz completa disponível na sessão para consulta sob demanda. Ao revisar uma entrega anterior, diga quais regras mudaram, quais verificações foram refeitas e se houve novas consultas. Não apresente revisão não realizada como concluída.
+
+Fora do bloco de prompt, prefira tópicos curtos e tabelas de exceções. Não imprima a matriz inteira de evidências, os retornos brutos ou uma justificativa repetida para cada regra estável. Economia de apresentação não dispensa executar e registrar a revisão.
 
 Marque o resultado como **“proposta inicial para trial, editável pelo cliente”**. Se a evidência permitir apenas parte da taxonomia, indique **“cobertura parcial”** e enumere o escopo; se não permitir regra alguma, entregue só o diagnóstico, sem bloco pronto para colar.
 
@@ -148,6 +161,7 @@ Marque o resultado como **“proposta inicial para trial, editável pelo cliente
 - [ ] Regras e exemplos sem contradições; nenhuma exclusividade incerta imposta.
 - [ ] Alcance das aprovações preservado e alterações propagadas a todas as seções.
 - [ ] Revisão da versão atual registrada, sem herdar validação de uma versão anterior.
+- [ ] Consultas e evidências reutilizadas sem repetir coleta por rodada; relatório sem duplicar o prompt.
 - [ ] JSON completo com nomes literais de tags/temas, sem resposta pública/privada nem alteração de sentimento/status.
 - [ ] Prompt pronto para copiar, sem placeholders nem dados pessoais.
 - [ ] Revisão de mesa não apresentada como acurácia ou teste real.

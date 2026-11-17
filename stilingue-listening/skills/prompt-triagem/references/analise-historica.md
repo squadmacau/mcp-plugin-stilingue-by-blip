@@ -13,6 +13,8 @@ Tags não têm descritores próprios; temas classificam publicações já coleta
 
 Nomes são evidência de vocabulário, não de regra. Não deduza o significado de uma sigla, exclusividade entre tags, hierarquia ou condição de aplicação só pela nomenclatura.
 
+Para evitar repetir o setup inteiro, escolha limites de página eficientes dentro do schema real, registre os offsets concluídos e avance só as listas ainda incompletas. Reutilize o inventário enquanto painel e configuração forem os mesmos; se houver indicação de mudança, atualize-o. Não peça `temasetopicos` se o setup já resolveu a estrutura.
+
 ## 2. Janela de seis meses
 
 - Fixe o instante final da consulta e o fuso usado pelo conector. Subtraia **seis meses de calendário**, ajustando para o último dia válido do mês de destino quando necessário. Não use 180 dias nem seis blocos de 30 dias como equivalentes.
@@ -23,7 +25,7 @@ Nomes são evidência de vocabulário, não de regra. Não deduza o significado 
 
 ## 3. Panorama quantitativo
 
-Para cada segmento, consulte `warroom_query`, sempre com a mesma apikey e os filtros de negócio acordados:
+Primeiro obtenha os agregados necessários de cada segmento com `warroom_query`, sempre com a mesma apikey e os filtros de negócio acordados. Consolide-os antes de planejar a amostra qualitativa; a tabela não significa executar todos os paths para cada rótulo e segmento:
 
 | `path` | Finalidade |
 | --- | --- |
@@ -31,11 +33,13 @@ Para cada segmento, consulte `warroom_query`, sempre com a mesma apikey e os fil
 | `sentimento_tags` | Uso observado de tags |
 | `sentimento_temas` | Uso observado de temas |
 | `temasetopicos` | Complementar a estrutura temática, quando necessário |
-| `publicacoes` | Evidência textual e rótulos efetivamente aplicados |
+| `publicacoes` | Só depois dos agregados, para preencher lacunas de evidência textual |
 
 Use `annotated=true` apenas em consultas explicitamente voltadas à base anotada. Não o aplique ao total usado como denominador. Esse filtro, sozinho, não garante que uma publicação tenha uma tag ou um tema específico.
 
-Antes de consolidar, confira a unidade de contagem, os campos retornados e eventuais limites dos rankings. Não trate ranking truncado como inventário completo; use o setup para identificar rótulos que não apareceram e consulte-os individualmente quando necessário.
+Antes de consolidar, confira a unidade de contagem, os campos retornados e eventuais limites dos rankings. Não trate ranking truncado como inventário completo: ajuste o limite ou pagine se suportado; use o setup para identificar os rótulos ainda não cobertos e consulte-os individualmente quando necessário. Não use limites crescentes às cegas se o schema não os documentar.
+
+Uma resposta reutilizável de agregado cobre todos os rótulos que ela efetivamente contém naquele segmento; não repita `estatisticas`, `sentimento_tags` ou `sentimento_temas` para cada tag/tema. Não some volume de anotações como total de posts. Se uma resposta já fornecer o mesmo total e unidade de forma verificável, reutilize em vez de chamar outro path apenas para obter o mesmo número.
 
 Apresente por rótulo: família (tag/tema), nome exato, volume observado quando disponível, meses com ocorrência e canais. Declare o denominador de qualquer percentual. Uma publicação pode ter vários rótulos: somar frequências de tags/temas não produz o total de publicações nem percentuais necessariamente somam 100%.
 
@@ -43,13 +47,21 @@ Não transforme o cruzamento de sentimento em regra de sentimento. Aqui ele serv
 
 ## 4. Amostra qualitativa estratificada
 
-Comece com lotes pequenos por rótulo e período, por exemplo 10 a 20 publicações por chamada, e aprofunde onde houver ambiguidade. **Nunca solicite mais de 300 publicações por chamada.** Prefira agregados para medir volume; não baixe o semestre inteiro.
+Comece com lotes pequenos, por exemplo 5 publicações por chamada, para as lacunas que restarem após aproveitar os exemplos já retornados. Aprofunde apenas se faltarem casos independentes, contraste, diversidade temporal ou exemplos reservados. **Nunca solicite mais de 300 publicações por chamada.** Prefira agregados para medir volume; não baixe o semestre inteiro.
+
+Use um mapa de cobertura por rótulo: evidências independentes, períodos/canais observados, contrastes, casos reservados e dúvidas. Se o retorno trouxer múltiplos rótulos verificáveis, registre a evidência para todos eles sem novas chamadas. Não use esse reaproveitamento para presumir ausência de rótulos omitidos pelo retorno.
+
+Não execute uma grade exaustiva de chamadas por rótulo × todas as fatias × todos os canais. Mantenha os agregados dos seis meses e procure exemplos qualitativos em períodos/canais distintos conforme a ocorrência e as lacunas do mapa. Ao atender os critérios de sustentação e revisão de um rótulo, pare sua coleta; priorize os ainda não resolvidos, sem reduzir silenciosamente o inventário ou a cobertura temporal.
+
+Se `projection` suportar campos selecionáveis no contrato real, peça apenas texto, identificador, data, canal, rótulos e contexto/link necessários. Não peça autoria detalhada, imagens e engajamento sem necessidade para a regra. Se a projeção não estiver documentada ou omitir a anotação necessária, mantenha o retorno suportado; não invente campos nem considere a redução local equivalente à redução no servidor.
 
 - Use `tags` ou `themes` para buscar um rótulo de cada vez; assim não dependa de uma interpretação implícita de AND/OR em listas separadas por `:`.
 - Distribua exemplos pelos meses com ocorrência, canais e casos frequentes/raros. Não use apenas `hot` ou posts mais engajados; alterne recortes temporais e ordenação por data.
 - Deduplique por `pid` e agrupe cópias/quase duplicatas para que uma campanha ou resposta repetida não pareça evidência independente. Não altere os totais agregados originais; informe separadamente a deduplicação da amostra.
 - Inclua publicações com rótulos vizinhos e casos sem o rótulo em análise. Ausência de anotação **não é negativo confirmado**: pode ser falta de revisão, automação ou taxonomia incompleta. Use como contraste para inspeção, não como verdade absoluta.
 - Não exclua autoria proprietária, spam, canais ou tipos de interação silenciosamente. Preserve o escopo que o trial vai receber; se algum filtro for necessário, declare-o e mantenha-o em todas as consultas comparáveis.
+
+Evite varrer páginas de cópias: se um lote não acrescentar exemplos independentes, mude o período ou a ordenação permitida em vez de repetir a mesma busca. Se continuar sem evidência suficiente, registre a limitação e use o fluxo de dúvida, não uma coleta indefinida. Timeout/erro deve seguir a recuperação do conector, sem criar um segundo ciclo de retries concorrente com o automático.
 
 ### Gate obrigatório: texto e anotação juntos
 
@@ -66,6 +78,8 @@ Se não for possível associar texto às classificações, pare a inferência. E
 ## 5. Das observações às regras
 
 Monte uma matriz de evidências antes de redigir:
+
+Mantenha-a compacta no registro da sessão, sem reproduzir textos completos nem imprimi-la a cada rodada de aprovação.
 
 | Campo | Conteúdo |
 | --- | --- |
@@ -122,7 +136,7 @@ Antes de entregar cada versão, confronte decisões registradas, critérios fina
 
 Use casos pertinentes à taxonomia selecionada. Se um cenário não se aplicar, indique isso em vez de inventar um rótulo para testá-lo. Esses cenários são controles genéricos, não regras de um cliente.
 
-Para cada exemplo incluído no prompt, enumere os rótulos esperados a partir dos critérios e compare com **ambos** os arrays do JSON. Para cada regra alterada ou combinação aprovada, inclua ao menos um caso de aplicação e um de fronteira/abstenção na revisão. Registre no relatório:
+Para cada exemplo incluído no prompt, enumere os rótulos esperados a partir dos critérios e compare com **ambos** os arrays do JSON. Para cada regra alterada ou combinação aprovada, inclua ao menos um caso de aplicação e um de fronteira/abstenção na revisão. Registre a tabela abaixo na sessão; no relatório mostre o balanço e as linhas corrigidas ou limitadas, disponibilizando o restante sob demanda:
 
 | Caso | Critério/decisão e origem | Tags e temas esperados | Resultado da revisão e ajuste |
 | --- | --- | --- | --- |
@@ -131,6 +145,8 @@ Para cada exemplo incluído no prompt, enumere os rótulos esperados a partir do
 Não fabrique essa tabela como se houvesse execução da LLM do triagem: ela documenta a comparação manual entre o texto e seus exemplos. Se houver linha pendente, resolva ou exclua o trecho conflitante antes de entregar o prompt pronto.
 
 **Mudou o prompt, muda o escopo da revisão.** Reutilizar o histórico não dispensa reavaliar os critérios alterados, seus exemplos e as regras relacionadas. Se reutilizar casos já examinados, descreva como teste de regressão de mesa, não como nova amostra independente. Para avaliar generalização, use casos reservados ainda não utilizados quando disponíveis; sem eles, declare que essa avaliação adicional não foi feita.
+
+Revisão semântica de critérios, decisões e exemplos usa primeiro as evidências disponíveis: não exige novas chamadas MCP por padrão. Reavalie em profundidade os critérios alterados e suas dependências, mantendo a checagem de coerência do conjunto final. Busque mais dados somente se a alteração exigir evidência ainda ausente; não repita toda a análise de seis meses.
 
 Essa revisão é uma simulação de mesa, não uma execução do agente em produção. Não anuncie acurácia, precisão, recall ou “validado no triagem” sem execução real, gabarito revisado e denominadores explícitos. Informe tamanho da amostra, como foi separada e limitações.
 

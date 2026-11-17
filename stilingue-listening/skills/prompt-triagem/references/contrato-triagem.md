@@ -84,6 +84,8 @@ Os marcadores abaixo são instruções de montagem, **não** conteúdo a entrega
 
 Escolha de modo, perguntas de aprovação e respostas Não sei pertencem à conversa de construção e ao relatório, não ao prompt executado pelo triagem. O classificador não deve interrogar o consumidor para resolver dúvidas de taxonomia. O texto final contém apenas critérios decididos e sua regra de abstenção; não inclua critérios pendentes de confirmação como definitivos.
 
+Escreva critérios concisos, sem repetir os mesmos limites em cada rótulo. Selecione exemplos que cubram várias fronteiras úteis, em vez de um JSON completo para cada tag/tema. Preserve o contrato e os casos necessários para evitar ambiguidades; concisão não autoriza excluir rótulos sustentados. Em correções posteriores, entregue os trechos alterados e a revisão afetada; regenere o bloco completo apenas se solicitado ou se a mudança estrutural tornar os trechos difíceis de aplicar, explicando o motivo.
+
 ```text
 Você é um classificador de interações de social media de [MARCA/OPERAÇÃO].
 Sua tarefa nesta versão de trial é propor somente as tags e os temas
