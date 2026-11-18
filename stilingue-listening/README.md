@@ -57,7 +57,7 @@ Tokens podem ser revogados a qualquer momento pela Stilingue, e o acesso respeit
 
 ### Prompt inicial de triagem
 
-Invoque `/prompt-triagem` ou peça um prompt para iniciar o trial do agente de triagem. A skill usa `list_panels` e `setup` para identificar o painel e a taxonomia, e `warroom_query` para analisar o uso das anotações nos últimos seis meses de calendário.
+Invoque `/prompt-triagem` ou peça um prompt para iniciar o trial do agente de triagem. A skill usa `list_panels` e `setup` para identificar o painel e a taxonomia, e `warroom_query` para analisar o uso das anotações nos últimos seis meses de calendário. A inferência qualitativa de regras usa comentários públicos de usuários; DMs/inbox e respostas da própria marca ficam fora da amostra de mensagens a classificar, evitando extrapolar padrões de atendimento ou de resposta.
 
 No início, escolha como construir o prompt:
 
@@ -68,7 +68,7 @@ Não é necessário conhecer as regras da operação para testar. **Não sei** n
 
 Antes de cada entrega, inclusive após correções do usuário, a skill revisa a consistência entre decisões, critérios e exemplos e registra os casos verificados. Reutilizar os mesmos dados não valida automaticamente uma nova versão do prompt. Aprovações ambíguas são esclarecidas no modo detalhado; trechos sem decisão ou sustentação ficam fora do texto pronto para uso.
 
-**Eficiência:** a skill mantém os seis meses e o inventário completo, mas reutiliza consultas da mesma sessão, começa por agregados e coleta exemplos incrementalmente, aproveitando publicações com vários rótulos verificados. Rodadas de aprovação não reiniciam a coleta. Os relatórios são compactos e revisões posteriores mostram só alterações, salvo pedido do prompt integral. O registro detalhado fica disponível enquanto acessível na sessão; não há garantia de cache entre conversas. Isso evita trabalho redundante, mas não garante redução específica de créditos: o consumo depende também do modelo, dos retornos e do histórico da conversa.
+**Eficiência:** a skill mantém os seis meses e o inventário completo, mas reutiliza consultas da mesma sessão, começa por agregados e coleta exemplos incrementalmente, aproveitando publicações com vários rótulos verificados. A amostra de regras usa comentários públicos de usuários, não DMs/inbox nem respostas publicadas pela própria marca. Quando o servidor não permite aplicar filtros de autoria a um agregado, ele é identificado como contexto da superfície pública (que pode incluir respostas), não como distribuição de comentários recebidos. Rodadas de aprovação não reiniciam a coleta. Os relatórios são compactos e revisões posteriores mostram só alterações, salvo pedido do prompt integral. O registro detalhado fica disponível enquanto acessível na sessão; não há garantia de cache entre conversas. Isso evita trabalho redundante, mas não garante redução específica de créditos: o consumo depende também do modelo, dos retornos e do histórico da conversa.
 
 É necessário acesso ao setup e à leitura das publicações do mesmo painel. Se as ferramentas não fornecerem texto associado às tags/temas aplicados, a skill solicita um export autorizado com esses dados; rankings ou nomes de rótulos isolados não bastam para inferir regras.
 

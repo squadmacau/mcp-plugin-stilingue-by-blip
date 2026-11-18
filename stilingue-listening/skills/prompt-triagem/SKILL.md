@@ -19,6 +19,10 @@ As referências locais tornam a skill autocontida quanto às regras do triagem; 
 ## Eficiência sem reduzir cobertura
 
 - Preserve os seis meses, o inventário completo e os critérios de evidência. Não limite rótulos ou encurte a janela silenciosamente para economizar.
+- **Base qualitativa obrigatória: comentários públicos de usuários.** Infira critérios de tags/temas a partir de comentários publicamente visíveis de usuários; não use DMs/inbox nem respostas publicadas pela própria marca como exemplos de mensagens a classificar. Isso evita tratar regras de DM ou respostas da marca como se fossem regras de triagem de comentários recebidos.
+- Aplique o filtro de comentários públicos no servidor usando somente os valores documentados no schema atual da ferramenta. Não inclua posts originais, inbox ou outros tipos de interação como substitutos de comentários. Se não for possível filtrar com segurança, não baixe um conjunto amplo para descartar DMs depois: registre a limitação e não apresente essa amostra como evidência qualitativa de comentários.
+- Prefira comentários raiz/iniciados pelo usuário. Quando o schema retornar `is_root`, `username` ou campos equivalentes, use-os apenas para distinguir a mensagem original de uma resposta da página ou de outro usuário; não presuma que toda resposta não-raiz foi escrita pela marca. Inclua respostas de terceiros somente quando a autoria externa estiver clara e a interação corresponder ao escopo; exclua respostas da página oficial. Se a autoria de respostas não puder ser verificada, baseie a inferência em comentários raiz. Não reproduza handles de usuários no prompt ou relatório.
+- Para agregados, aplique os mesmos filtros de comentários públicos sempre que o path/schema permitir. Agregados sem esse recorte servem apenas como contexto geral do painel, não como distribuição de comentários nem evidência para inferir regra. Registre separadamente escopo e denominadores.
 - Mantenha um registro compacto na sessão: painel, janela fixa, consultas e parâmetros, páginas concluídas, dados úteis, evidências por rótulo, casos reservados e decisões. Reutilize apenas dados realmente acessíveis, do mesmo escopo. Não copie respostas brutas para cada mensagem nem prometa cache persistente entre conversas.
 - Antes de chamar uma ferramenta, confira se a informação já está disponível. Nova aprovação, correção ou mudança entre expresso/detalhado não exige refazer consultas. Reconsulte somente dados faltantes, inválidos, desatualizados ou de escopo alterado, explicitando o motivo.
 - Use retornos mínimos e amostragem incremental conforme a referência histórica. Uma publicação com vários rótulos verificados serve de evidência para todos eles; não busque outra só para preencher uma grade rótulo × mês × canal.
@@ -57,9 +61,9 @@ Ambos os modos usam a mesma janela, fontes, critérios de evidência e contrato 
 
 Reutilize a seleção explícita da conversa. Caso contrário, descubra os painéis com `list_panels`: um painel elegível pode ser usado diretamente; havendo vários, peça a escolha pelos nomes. Não peça `account_id`/`universe_id` ao usuário.
 
-Consulte o setup completo antes de perguntar sobre informações que ele já fornece. Confirme a correspondência da apikey com o painel. Se não houver acesso ao setup, oriente a liberação de permissão; não contorne com a apikey.
+Consulte o setup completo antes de perguntar sobre informações que ele já fornece. Use no `warroom_query` o mecanismo de acesso documentado no schema ativo da ferramenta; quando disponível, prefira `account_id` + `universe_id` da sessão autenticada. Não trate `universe_id` isoladamente como credencial nem use uma apikey para contornar falta de permissão.
 
-O padrão é **tags e temas existentes**, nos últimos seis meses de calendário até a consulta. Use um recorte diferente somente se o usuário o pedir, registrando a alteração. Se o trial for limitado a uma marca, canal, grupo ou operação dentro do painel, explicite esse filtro.
+O padrão é **tags e temas existentes**, nos últimos seis meses de calendário até a consulta, com inferência qualitativa baseada em comentários públicos de usuários. DMs/inbox e respostas da própria marca ficam fora da amostra de mensagens a classificar. Se o prompt for destinado também a DMs ou a outra superfície, deixe claro que a evidência de comentários públicos não valida automaticamente essa aplicação; pergunte se o usuário quer ampliar a análise ou manter o escopo do trial restrito. Registre qualquer recorte diferente solicitado. Se o trial for limitado a uma marca, canal, grupo ou operação dentro do painel, explicite esse filtro.
 
 Além da escolha de modo e da revisão detalhada, pergunte apenas sobre decisões que os dados não resolvem: seleção ambígua ou escopo operacional incompatível com o texto disponível. Não transforme a skill em um briefing longo.
 
@@ -70,7 +74,7 @@ Siga a [análise histórica](./references/analise-historica.md):
 1. Inventário completo da taxonomia e das automações visíveis.
 2. Janela explícita, fatiada em consultas de até 30 dias, com cobertura mensal.
 3. Totais e distribuições de tags/temas, sem confundir contagens sobrepostas.
-4. Amostra de texto associado às anotações, estratificada por rótulo, tempo e canal, com contrastes e deduplicação.
+4. Amostra de comentários públicos de usuários associada às anotações, estratificada por rótulo, tempo e canal, com contrastes e deduplicação; exclua DMs/inbox e respostas da própria marca.
 5. Separação de exemplos reservados para revisão antes de inferir regras.
 
 Se as ferramentas não estiverem disponíveis, solicite conexão ou export autorizado equivalente. Descubra os schemas reais antes de enviar parâmetros; não simule chamadas nem retorne números fictícios.
@@ -141,7 +145,7 @@ Execute o [protocolo de revisão](./references/analise-historica.md#6-verificaç
 
 Na primeira entrega ou quando solicitada a versão integral, entregue em português, nesta ordem. Em ajustes posteriores, use apenas alterações, verificações afetadas e novas ressalvas; não repita as cinco seções sem necessidade.
 
-1. **Resumo da base:** modo, painel pelo nome, Warroom, datas/fuso, filtros, cobertura real, totais disponíveis, publicações únicas e grupos de textos independentes inspecionados. Diferencie universo de amostra; se não medir independência, declare isso. Inclua o resumo operacional de consultas, sem estimar créditos.
+1. **Resumo da base:** modo, painel pelo nome, Warroom, datas/fuso, filtros (incluindo comentários públicos e exclusão de DMs), cobertura real, totais disponíveis, publicações únicas e grupos de textos independentes inspecionados. Diferencie universo de amostra; se não medir independência, declare isso. Separe agregados gerais de métricas filtradas para comentários. Inclua o resumo operacional de consultas, sem estimar créditos.
 2. **Padrão identificado:** resumo curto das regras e ressalvas, sem duplicar o catálogo de critérios que estará no prompt. Mantenha no registro da sessão a origem e a decisão por regra; destaque no relatório definições do usuário, divergências, correções e Não sei. No expresso, informe “sem aprovação humana”. Agrupe rótulos fora do escopo por motivo, preservando seus nomes; não os descreva como analisados qualitativamente quando não foram.
 3. **Prompt inicial — copiar para a ferramenta:** um único bloco de texto, autocontido, sem marcadores pendentes, credenciais, métricas de auditoria ou dependências dos arquivos desta skill.
 4. **Como testar e ajustar:** selecionar e conferir o modo curadoria na ferramenta antes de aplicar em lote pequeno e controlado, com revisão humana; incluir casos comuns, sem correspondência, rótulos vizinhos e múltiplas classificações. Conferir também o JSON e os campos de não resposta/não alteração. Revisar falsos positivos/omissões e ajustar os critérios antes de ampliar. Não execute esse processamento por conta própria.
@@ -155,7 +159,8 @@ Marque o resultado como **“proposta inicial para trial, editável pelo cliente
 
 - [ ] Painel correto e dados reais, sem mistura de clientes ou Radar.
 - [ ] Taxonomia paginada; janela e cobertura efetiva declaradas.
-- [ ] Texto associado aos rótulos e amostra além dos posts mais populares.
+- [ ] Regras inferidas de comentários públicos de usuários; nenhuma DM/inbox ou resposta da própria marca usada como mensagem a classificar.
+- [ ] Filtros e denominadores distinguem comentários públicos de agregados gerais do painel.
 - [ ] Regras e exceções sustentadas; hipóteses e rótulos excluídos visíveis.
 - [ ] Modo respeitado; revisões aguardadas no detalhado; Não sei não contado como aprovação.
 - [ ] Regras e exemplos sem contradições; nenhuma exclusividade incerta imposta.

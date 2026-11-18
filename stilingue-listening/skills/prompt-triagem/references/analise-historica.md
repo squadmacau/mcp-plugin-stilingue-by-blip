@@ -7,7 +7,7 @@ Use apenas o Warroom do cliente selecionado. Radar não tem as anotações do pa
 1. Descubra a conta e o painel com `list_panels`. Se houver mais de um painel compatível, confirme pelo nome; não misture clientes ou painéis.
 2. Leia `setup` com `account_id` e `universe_id`. Pagine grupos, temas e tags independentemente, com `groups_limit`/`groups_skip`, `themes_limit`/`themes_skip` e `tags_limit`/`tags_skip`. Se a resposta atingir o limite, continue até esgotar.
 3. Registre nomes exatos, hierarquias que a fonte explicitar, descrições disponíveis e automações ativas/pausadas. Os descritores de setup são amostras, não a regra completa.
-4. Obtenha a `apikey` correspondente ao mesmo painel para `warroom_query`, conforme o contrato disponível. Não suponha que `universe_id` seja a apikey, nem que uma apikey dê acesso ao setup.
+4. Use no `warroom_query` o mecanismo de acesso documentado no schema ativo da ferramenta. Quando disponível, prefira `account_id` + `universe_id` da sessão autenticada; use `apikey` somente se o contrato ativo exigir ou o usuário optar por ela. Não trate `universe_id` isoladamente como credencial.
 
 Tags não têm descritores próprios; temas classificam publicações já coletadas; grupos definem coleta. Grupo não é uma anotação a ser inventada pelo prompt.
 
@@ -25,7 +25,7 @@ Para evitar repetir o setup inteiro, escolha limites de página eficientes dentr
 
 ## 3. Panorama quantitativo
 
-Primeiro obtenha os agregados necessários de cada segmento com `warroom_query`, sempre com a mesma apikey e os filtros de negócio acordados. Consolide-os antes de planejar a amostra qualitativa; a tabela não significa executar todos os paths para cada rótulo e segmento:
+Primeiro obtenha os agregados necessários de cada segmento com `warroom_query`, usando o mesmo mecanismo de acesso e os filtros de negócio acordados. Para inferência de regras, filtre para comentários publicamente visíveis sempre que o schema/path permitir. Consolide os resultados antes de planejar a amostra qualitativa; a tabela não significa executar todos os paths para cada rótulo e segmento:
 
 | `path` | Finalidade |
 | --- | --- |
@@ -41,13 +41,24 @@ Antes de consolidar, confira a unidade de contagem, os campos retornados e event
 
 Uma resposta reutilizável de agregado cobre todos os rótulos que ela efetivamente contém naquele segmento; não repita `estatisticas`, `sentimento_tags` ou `sentimento_temas` para cada tag/tema. Não some volume de anotações como total de posts. Se uma resposta já fornecer o mesmo total e unidade de forma verificável, reutilize em vez de chamar outro path apenas para obter o mesmo número.
 
-Apresente por rótulo: família (tag/tema), nome exato, volume observado quando disponível, meses com ocorrência e canais. Declare o denominador de qualquer percentual. Uma publicação pode ter vários rótulos: somar frequências de tags/temas não produz o total de publicações nem percentuais necessariamente somam 100%.
+Apresente por rótulo: família (tag/tema), nome exato, volume observado quando disponível, meses com ocorrência e canais. Declare se os volumes se referem a comentários públicos filtrados ou ao painel sem esse recorte; o segundo caso é apenas contexto geral, não distribuição de comentários nem evidência de regra. Declare o denominador de qualquer percentual. Uma publicação pode ter vários rótulos: somar frequências de tags/temas não produz o total de publicações nem percentuais necessariamente somam 100%.
 
 Não transforme o cruzamento de sentimento em regra de sentimento. Aqui ele serve para localizar exemplos e contrastes.
 
 ## 4. Amostra qualitativa estratificada
 
 Comece com lotes pequenos, por exemplo 5 publicações por chamada, para as lacunas que restarem após aproveitar os exemplos já retornados. Aprofunde apenas se faltarem casos independentes, contraste, diversidade temporal ou exemplos reservados. **Nunca solicite mais de 300 publicações por chamada.** Prefira agregados para medir volume; não baixe o semestre inteiro.
+
+### Superfície obrigatória para inferência: comentários públicos de usuários
+
+- Use comentários públicos escritos por usuários como evidência qualitativa para descobrir critérios de tags/temas. Não consulte nem use DMs/inbox ou respostas publicadas pela própria marca como exemplos de mensagens a classificar: a linguagem, o contexto disponível e a finalidade diferem e podem induzir regras inadequadas.
+- No schema ativo do `warroom_query`, escolha os valores documentados de `channels` e, quando aplicável, `sac_type` que representam comentários públicos. Por exemplo, os canais `InstagramComments`, `FacebookComments` e `YouTubeComments` são distintos dos canais de inbox; use apenas superfícies que o painel e a ferramenta realmente suportem. Não invente nomes de canal ou tipo.
+- Se a ferramenta exigir `fanpages` junto com `channels`/`sac_type`, obtenha e passe os filtros exigidos conforme o schema. Não use `sac_type` sem suas dependências obrigatórias.
+- Prefira comentários raiz/iniciados pelo usuário. Se o retorno fornecer `is_root`, autoria (`username`) ou campos equivalentes, use-os para distinguir a mensagem inicial de uma resposta, sem inferir que toda resposta não-raiz foi escrita pela marca. Inclua resposta de terceiro apenas quando a autoria externa estiver clara; exclua respostas da página oficial. Se não der para verificar a autoria das respostas, use comentários raiz para a inferência. Não exponha handles no prompt ou relatório.
+- Não substitua comentários por posts originais, menções, artigos, reviews ou mensagens privadas. Se outro tipo de interação for explicitamente solicitado, mantenha-o como escopo separado e não misture suas evidências com comentários.
+- Aplique o recorte de comentários nos agregados quando suportado. Se um agregado não aceitar esse filtro, rotule-o como painel geral e use-o somente para contexto/planejamento; não atribua sua frequência aos comentários nem infira regra a partir dela.
+- Se o schema/path não permitir identificar comentários públicos com segurança, não faça uma consulta ampla para filtrar DMs localmente: isso desperdiça payload e pode expor conteúdo fora do escopo. Informe a limitação, não trate a amostra como pública e solicite uma fonte/recorte compatível.
+- Registre filtros exatos, canais cobertos e lacunas de cobertura. Agregados podem incluir respostas públicas mesmo quando não há filtro de autoria; não os descreva como distribuição de comentários recebidos. Regras sustentadas somente por DMs ou respostas da própria marca não entram como regras aprendidas para o trial de comentários públicos.
 
 Use um mapa de cobertura por rótulo: evidências independentes, períodos/canais observados, contrastes, casos reservados e dúvidas. Se o retorno trouxer múltiplos rótulos verificáveis, registre a evidência para todos eles sem novas chamadas. Não use esse reaproveitamento para presumir ausência de rótulos omitidos pelo retorno.
 
@@ -59,7 +70,7 @@ Se `projection` suportar campos selecionáveis no contrato real, peça apenas te
 - Distribua exemplos pelos meses com ocorrência, canais e casos frequentes/raros. Não use apenas `hot` ou posts mais engajados; alterne recortes temporais e ordenação por data.
 - Deduplique por `pid` e agrupe cópias/quase duplicatas para que uma campanha ou resposta repetida não pareça evidência independente. Não altere os totais agregados originais; informe separadamente a deduplicação da amostra.
 - Inclua publicações com rótulos vizinhos e casos sem o rótulo em análise. Ausência de anotação **não é negativo confirmado**: pode ser falta de revisão, automação ou taxonomia incompleta. Use como contraste para inspeção, não como verdade absoluta.
-- Não exclua autoria proprietária, spam, canais ou tipos de interação silenciosamente. Preserve o escopo que o trial vai receber; se algum filtro for necessário, declare-o e mantenha-o em todas as consultas comparáveis.
+- Exclua DMs/inbox e respostas da própria marca da evidência qualitativa conforme o escopo padrão desta skill; registre essa decisão e o filtro aplicado. Declare separadamente qualquer exclusão adicional (por exemplo, spam, posts originais, autoria proprietária ou outro canal) e mantenha filtros consistentes em consultas comparáveis. Não misture tipos de interação silenciosamente.
 
 Evite varrer páginas de cópias: se um lote não acrescentar exemplos independentes, mude o período ou a ordenação permitida em vez de repetir a mesma busca. Se continuar sem evidência suficiente, registre a limitação e use o fluxo de dúvida, não uma coleta indefinida. Timeout/erro deve seguir a recuperação do conector, sem criar um segundo ciclo de retries concorrente com o automático.
 
